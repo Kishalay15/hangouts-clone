@@ -1,9 +1,11 @@
 package hangoutsclone.hangouts.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.stereotype.Service;
 
 import hangoutsclone.hangouts.config.TokenProvider;
 import hangoutsclone.hangouts.entities.User;
@@ -11,6 +13,7 @@ import hangoutsclone.hangouts.exceptions.UserException;
 import hangoutsclone.hangouts.repository.UserRepo;
 import hangoutsclone.hangouts.requests.UpdateUserRequest;
 
+@Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -47,8 +50,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(Integer id, UpdateUserRequest updateUserRequest) throws UserException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateUser'");
+        User user = findUserById(id);
+
+        if (updateUserRequest.getName() != null) {
+            user.setName(updateUserRequest.getName());
+        }
+
+        if (user.getDp() != null) {
+            user.setDp(updateUserRequest.getDp());
+        }
+
+        return userRepo.save(user);
+    }
+
+    @Override
+    public List<User> searchUser(String query) {
+        List<User> users = userRepo.searchUser(query);
+
+        return users;
     }
     
 }

@@ -4,17 +4,31 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class TokenProvider {
 
-    SecretKey secretKey = Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
+    @Value("${jwt.secret}")
+    private String secretKeyStr;
+
+    private SecretKey secretKey;
+
+    @PostConstruct
+    public void init() {
+        if (secretKeyStr != null && !secretKeyStr.trim().isEmpty()) {
+            this.secretKey = Keys.hmacShaKeyFor(secretKeyStr.getBytes());
+        } else {
+            this.secretKey = Jwts.SIG.HS256.key().build();
+            }
+        }
 
     public String generateToken(Authentication authentication) {
         String jwt = Jwts.builder()
