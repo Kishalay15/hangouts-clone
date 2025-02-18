@@ -21,7 +21,14 @@ public class GlobalException extends Exception {
     }
 
     @ExceptionHandler(MessageException.class)
-    public ResponseEntity<ErrorDetail> MessageExceptionHandler(UserException e, WebRequest request) {
+    public ResponseEntity<ErrorDetail> MessageExceptionHandler(MessageException e, WebRequest request) {
+        ErrorDetail errorDetail = new ErrorDetail(e.getMessage(), request.getDescription(false), LocalDateTime.now());
+
+        return new ResponseEntity<>(errorDetail, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ChatException.class)
+    public ResponseEntity<ErrorDetail> ChatExceptionHandler(ChatException e, WebRequest request) {
         ErrorDetail errorDetail = new ErrorDetail(e.getMessage(), request.getDescription(false), LocalDateTime.now());
 
         return new ResponseEntity<>(errorDetail, HttpStatus.BAD_REQUEST);
